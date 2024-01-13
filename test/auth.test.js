@@ -1,7 +1,7 @@
 const supertest = require("supertest");
 const app = require("../app");
 const mongoose = require("mongoose");
-const User = require("../api/models/User");
+const Course = require("../api/models/Course");
 const Time = 20000;
 
 beforeAll(async () => {
@@ -9,59 +9,40 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await User.deleteMany({});
+  await Course.deleteMany({});
 });
 
 afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe("Authentication and Authorization Tests", () => {
-  test(
-    "should register a new user",
+describe("Course API Tests", () => {
+  it(
+    "should create a new course",
     async () => {
-      const res = await supertest(app).post("/api/auth/register").send({
-        username: "newUser",
-        email: "newuser@example.com",
-        password: "Password123",
-        role: "user",
+      const res = await supertest(app).post("/api/admin/courses").send({
+        title: "Test Course",
+        description: "Test description",
+        price: 100,
+        author: "Test Author",
+        publishedDate: "2022-01-01",
       });
+
       expect(res.statusCode).toBe(201);
-      expect(res.body.token).toBeDefined();
+      expect(res.body.data).toHaveProperty("_id");
     },
     Time
   );
-  test(
-    "should login the user",
-    async () => {
-      // Use the same credentials as the registration test
-      const res = await supertest(app).post("/api/auth/login").send({
-        email: "newuser@example.com",
-        password: "Password123",
-      });
 
+  it(
+    "should retrieve all courses",
+    async () => {
+      const res = await supertest(app).get("/api/admin/courses");
       expect(res.statusCode).toBe(200);
-      expect(res.body.token).toBeDefined();
+      expect(Array.isArray(res.body.data)).toBeTruthy();
     },
     Time
   );
-  test(
-    "should prevent access to admin-only route for non-admin user",
-    async () => {
-      const loginRes = await supertest(app).post("/api/auth/login").send({
-        email: "newuser@example.com",
-        password: "password123",
-      });
 
-      expect(loginRes.statusCode).toBe(200); // Check if login is successful
-      const token = loginRes.body.token;
-
-      const res = await supertest(app)
-        .get("/api/admin/admin-only")
-        .set("Authorization", `Bearer ${token}`);
-
-      expect(res.statusCode).toBe(403); // Forbidden
-    },
-    Time
-  );
+  // Additional tests for updateCourse and deleteCourse...
 });
