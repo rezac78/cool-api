@@ -9,11 +9,22 @@ const generateToken = (user) => {
 
 exports.register = async (req, res) => {
   try {
+    const { email, username } = req.body;
+    const existingUser = await User.findOne({
+      $or: [{ email: email }, { username: username }],
+    });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email or username already exists",
+      });
+    }
     const user = await User.create(req.body);
     const token = generateToken(user);
 
     res.status(201).json({
       success: true,
+      message: "User successfully created",
       token,
     });
   } catch (error) {
