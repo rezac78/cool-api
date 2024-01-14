@@ -40,18 +40,21 @@ exports.login = async (req, res) => {
     if (!user) {
       return res
         .status(401)
-        .json({ success: false, error: "Invalid credentials" });
+        .json({ success: false, message: "Such a user has not been registered." });
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res
         .status(401)
-        .json({ success: false, error: "Invalid credentials" });
+        .json({ success: false, message: "Email or password is incorrect." });
     }
     const token = generateToken(user);
+    const role = user.role;
     res.status(200).json({
       success: true,
+      message: "welcome",
       token,
+      role
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
