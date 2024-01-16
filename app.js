@@ -6,6 +6,7 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const redis = require("redis");
+const cookieParser = require('cookie-parser');
 // import File
 const connectDB = require("./config/db");
 const authRoutes = require("./api/routes/authRoutes");
@@ -42,13 +43,20 @@ if (process.env.NODE_ENV === "development") {
 
 // Middleware setup
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000', 
+  credentials: true, 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: ['Content-Type'],
+};
+
+app.use(cors(corsOptions));
 
 // Define a root route
 app.get("/", (req, res) => {
   res.send("Hello World from Express.js");
 });
-
+app.use(cookieParser());
 app.use(limiter);
 
 // Data sanitization against NoSQL query injection

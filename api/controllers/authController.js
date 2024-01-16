@@ -21,7 +21,6 @@ exports.register = async (req, res) => {
     }
     const user = await User.create(req.body);
     const token = generateToken(user);
-
     res.status(201).json({
       success: true,
       message: "User successfully created",
@@ -38,9 +37,10 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Such a user has not been registered." });
+      return res.status(401).json({
+        success: false,
+        message: "Such a user has not been registered.",
+      });
     }
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
@@ -50,11 +50,14 @@ exports.login = async (req, res) => {
     }
     const token = generateToken(user);
     const role = user.role;
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+    });
     res.status(200).json({
       success: true,
       message: "welcome",
       token,
-      role
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
