@@ -34,9 +34,15 @@ exports.updateCourse = async (req, res) => {
         .status(404)
         .json({ success: false, error: "No course found with this ID" });
     }
-    res.status(200).json({ success: true, data: course });
+    res
+      .status(200)
+      .json({ success: true, message: "َUpdate successfully", data: course });
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    res.status(400).json({
+      success: false,
+      message: "Something is wrong",
+      error: error.message,
+    });
   }
 };
 // Delete a course by ID
@@ -48,9 +54,7 @@ exports.deleteCourse = async (req, res) => {
         .status(404)
         .json({ success: false, message: "No course found with this ID" });
     }
-    res
-      .status(200)
-      .json({ success: true, message: "Deleted successfully"});
+    res.status(200).json({ success: true, message: "Deleted successfully" });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
@@ -66,6 +70,15 @@ exports.deleteChapter = async (req, res) => {
     res
       .status(200)
       .json({ success: true, message: "Chapter deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+// Get a course by ID
+exports.getCourseById = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+    res.status(200).json({ success: true, data: course });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
