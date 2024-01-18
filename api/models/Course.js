@@ -22,7 +22,7 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  poster: {
+  instructorPoster: {
     type: String,
     validate: {
       validator: function (value) {
