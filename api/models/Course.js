@@ -14,6 +14,14 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  coursePrice: {
+    type: String,
+    required: true,
+  },
+  peopleNumber: {
+    type: String,
+    required: true,
+  },
   prerequisites: {
     type: String,
     required: true,
@@ -34,6 +42,10 @@ const courseSchema = new mongoose.Schema({
     required: true,
   },
   description: {
+    type: String,
+    required: true,
+  },
+  longDescription: {
     type: String,
     required: true,
   },
