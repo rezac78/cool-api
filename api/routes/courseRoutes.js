@@ -8,6 +8,8 @@ const {
   deleteCourse,
   deleteChapter,
   getCourseById,
+  addComment,
+  getComments,
 } = require("../controllers/courseController");
 
 // Example routes for courses
@@ -22,5 +24,7 @@ router.delete(
   authorize("admin"),
   deleteChapter
 );
+router.post("/comments", addComment);
+router.get("/comments/:courseId", getComments);
 
 module.exports = router;

@@ -1,4 +1,6 @@
 const Course = require("../models/Course");
+const Comment = require("../models/Comment");
+const mongoose = require("mongoose");
 
 // Create a new course
 exports.createCourse = async (req, res) => {
@@ -81,5 +83,39 @@ exports.getCourseById = async (req, res) => {
     res.status(200).json({ success: true, data: course });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
+  }
+};
+// Create addComment
+exports.addComment = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const { comment, name } = req.body.data;
+    const newComment = await Comment.create({
+      courseId,
+      comment,
+      name,
+    });
+    res.status(200).json({
+      data: newComment,
+      success: true,
+      message: "Comment Created successfully",
+    });
+  } catch (error) {
+    console.error("Error posting comment:", error);
+    res.status(500).json({ message: "Error posting comment" });
+  }
+};
+// Get all CommentCourse
+exports.getComments = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).send("Invalid Course ID");
+    }
+    const comments = await Comment.find({ courseId }).sort({ postedAt: -1 });
+    res.status(200).json({ success: true, data: comments });
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ success: false, error: "Error fetching comments" });
   }
 };
