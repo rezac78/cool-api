@@ -61,7 +61,7 @@ exports.deleteCourse = async (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
-// Delete a course by ID
+// Delete a Chapter by ID
 exports.deleteChapter = async (req, res) => {
   try {
     const { courseId, chapterId } = req.params;

@@ -1,25 +1,36 @@
 const mongoose = require("mongoose");
 
 const BlogPostSchema = new mongoose.Schema({
-  title: {
+  cardPhoto: {
     type: String,
     required: true,
     trim: true,
+    validate: {
+      validator: function (value) {
+        const urlPattern = /^https?:\/\/\S+/;
+        return urlPattern.test(value);
+      },
+      message: "Enter a valid URL for the Card photo",
+    },
   },
-  content: {
+  creatorName: {
     type: String,
     required: true,
   },
-  author: {
-    type: String,
-    required: true,
+  creationDate: {
+    type: Date,
+    default: Date.now,
   },
-  publishedDate: {
-    type: Date, 
+  subject: {
+    type: String,
     required: true,
   },
   tags: {
-    type: String, 
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
     required: true,
   },
 });
