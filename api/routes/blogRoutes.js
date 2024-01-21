@@ -7,6 +7,9 @@ const {
   updateBlog,
   deleteBlog,
   getBlogById,
+  addComment,
+  getComments,
+  postReply,
 } = require("../controllers/blogController");
 
 // Example routes for Blog
@@ -15,5 +18,7 @@ router.get("/", getAllBlog);
 router.get("/:id", getBlogById);
 router.put("/:id", protect, authorize("admin"), updateBlog);
 router.delete("/:id", protect, authorize("admin"), deleteBlog);
-
+router.post("/comments", addComment);
+router.get("/comments/:blogId", getComments);
+router.post("/comments/reply", postReply);
 module.exports = router;

@@ -17,6 +17,22 @@ const BlogPostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  creatorScope: {
+    type: String,
+    required: true,
+  },
+  creatorPhoto: {
+    type: String,
+    required: true,
+    trim: true,
+    validate: {
+      validator: function (value) {
+        const urlPattern = /^https?:\/\/\S+/;
+        return urlPattern.test(value);
+      },
+      message: "Enter a valid URL for the creater photo",
+    },
+  },
   creationDate: {
     type: Date,
     default: Date.now,

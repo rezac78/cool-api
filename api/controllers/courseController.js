@@ -120,7 +120,6 @@ exports.getComments = async (req, res) => {
 };
 // Get postReply
 exports.postReply = async (req, res) => {
-  console.log(req.body);
   try {
     const { comment, name, parentComment, courseId } = req.body;
     const newReply = await Comment.create({
