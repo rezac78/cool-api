@@ -88,8 +88,7 @@ exports.getCourseById = async (req, res) => {
 // Create addComment
 exports.addComment = async (req, res) => {
   try {
-    const { courseId } = req.body;
-    const { comment, name } = req.body.data;
+    const { comment, name, courseId } = req.body.data;
     const newComment = await Comment.create({
       courseId,
       comment,
@@ -117,5 +116,21 @@ exports.getComments = async (req, res) => {
   } catch (error) {
     console.error("Error fetching comments:", error);
     res.status(500).json({ success: false, error: "Error fetching comments" });
+  }
+};
+// Get postReply
+exports.postReply = async (req, res) => {
+  console.log(req.body);
+  try {
+    const { comment, name, parentComment, courseId } = req.body;
+    const newReply = await Comment.create({
+      courseId,
+      comment,
+      name,
+      parentComment,
+    });
+    res.status(201).json({ success: true, data: newReply });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

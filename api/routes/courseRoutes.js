@@ -10,6 +10,7 @@ const {
   getCourseById,
   addComment,
   getComments,
+  postReply,
 } = require("../controllers/courseController");
 
 // Example routes for courses
@@ -26,5 +27,5 @@ router.delete(
 );
 router.post("/comments", addComment);
 router.get("/comments/:courseId", getComments);
-
+router.post("/comments/reply", postReply);
 module.exports = router;
