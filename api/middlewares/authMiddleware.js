@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 exports.protect = async (req, res, next) => {
+    console.log("Cookies received in request:", req.cookies);
+
     let token;
     if (req.cookies && req.cookies.token) {
         console.log("Received token in cookie:", req.cookies.token);
