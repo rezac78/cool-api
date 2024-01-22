@@ -23,7 +23,7 @@ const limiter = rateLimit({
 
 // Create a Redis client
 const redisClient = redis.createClient({
-  host: process.env.REDIS_HOST || "localhost", // Replace with your Redis server host
+  host: process.env.REDIS_HOST || "cool-api-75mo.onrender.com", // Replace with your Redis server host
   port: process.env.REDIS_PORT || 6379, // Replace with your Redis server port
 });
 
