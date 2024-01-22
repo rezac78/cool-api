@@ -44,7 +44,7 @@ if (process.env.NODE_ENV === "development") {
 // Middleware setup
 app.use(express.json());
 const corsOptions = {
-  origin: 'https://cool-api-75mo.onrender.com', 
+  origin: 'https://your-netlify-app.netlify.app', 
   credentials: true, 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: ['Content-Type'],
