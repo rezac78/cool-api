@@ -48,12 +48,14 @@ exports.login = async (req, res) => {
         .json({ success: false, message: "Email or password is incorrect." });
     }
     const token = generateToken(user);
+    console.log("Generated Token:", token);
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: 'None',
       path: '/',
     });
+    console.log("Cookie set with token");
     res.status(200).json({
       success: true,
       message: "welcome",
