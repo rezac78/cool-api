@@ -42,15 +42,12 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Middleware setup
+const allowedOrigins = ['https://coollearning.netlify.app', 'http://localhost:3000'];
 app.use(express.json());
-const corsOptions = {
-  origin: 'https://coollearning.netlify.app', 
-  credentials: true, 
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: ['Content-Type'],
-};
-
-app.use(cors(corsOptions));
+app.use(cors((req, callback) => {
+  const origin = allowedOrigins.includes(req.header('Origin')) ? req.header('Origin') : false;
+  callback(null, { origin, credentials: true });
+}));
 
 // Define a root route
 app.get("/", (req, res) => {
