@@ -1,7 +1,0 @@
-# Custom cache control for all files in the 'assets' directory
-/assets/*
-  Cache-Control: public, max-age=31536000
-
-# Default cache control for all other files
-/*
-  Cache-Control: public, max-age=3600
