@@ -55,6 +55,7 @@ exports.login = async (req, res) => {
       sameSite: 'None',
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
+      domain: '.coollearning.netlify.app',
     });
     console.log("Cookie set with token");
     res.status(200).json({
