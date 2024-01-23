@@ -68,7 +68,10 @@ app.use("/api/admin", adminRoutes); // Admin-related routes
 app.use("/api/courses", courseRoutes); // Course-related routes
 app.use("/api/blog", blogRoutes); // Blog-related routes
 app.use("/api/user", userRoutes); // User-related routes
-
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  next();
+});
 // Select a port
 const PORT = process.env.PORT || 3000;
 
