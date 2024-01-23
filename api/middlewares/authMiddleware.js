@@ -1,19 +1,15 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 exports.protect = async (req, res, next) => {
-    console.log("Cookies received in request:", req.cookies);
-
     let token;
-    if (req.cookies && req.cookies.token) {
-        console.log("Received token in cookie:", req.cookies.token);
-        token = req.cookies.token;
+    if (req.cookies && req.cookies.cookieToken) {
+        token = req.cookies.cookieToken;
     }
     if (!token) {
         return res.status(401).json({ success: false, message: "Not authorized to access this route" });
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Decoded token:", decoded);
         const user = await User.findById(decoded.id);
         if (!user) {
             return res.status(401).json({ success: false, message: "Not authorized" });
