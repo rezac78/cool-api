@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const xssFilters = require("xss-filters");
 
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
@@ -9,7 +10,8 @@ const generateToken = (user) => {
 
 exports.register = async (req, res) => {
   try {
-    const { email, username } = req.body;
+    const email = xssFilters.inHTMLData(req.body.email);
+    const username = xssFilters.inHTMLData(req.body.username);
     const existingUser = await User.findOne({
       $or: [{ email: email }, { username: username }],
     });
@@ -19,7 +21,12 @@ exports.register = async (req, res) => {
         message: "Email or username already exists",
       });
     }
-    const user = await User.create(req.body);
+    const sanitizedUserData = {
+      ...req.body,
+      email,
+      username,
+    };
+    const user = await User.create(sanitizedUserData);
     const token = generateToken(user);
     res.status(201).json({
       success: true,
@@ -32,7 +39,9 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const email = xssFilters.inHTMLData(req.body.email);
+  const password = xssFilters.inHTMLData(req.body.password);
+
   try {
     const user = await User.findOne({ email }).select("+password");
     if (!user) {

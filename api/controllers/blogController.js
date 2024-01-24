@@ -1,11 +1,18 @@
 const BlogPost = require("../models/BlogPost");
 const Comment = require("../models/CommentBlog");
 const mongoose = require("mongoose");
-
+const xssFilters = require("xss-filters");
+function sanitizeInput(input) {
+  return typeof input === "string" ? xssFilters.inHTMLData(input) : input;
+}
 // Create a new blog post
 exports.createBlog = async (req, res) => {
   try {
-    const blogPost = await BlogPost.create(req.body);
+    const sanitizedBody = Object.keys(req.body).reduce((acc, key) => {
+      acc[key] = sanitizeInput(req.body[key]);
+      return acc;
+    }, {});
+    const blogPost = await BlogPost.create(sanitizedBody);
     res
       .status(201)
       .json({ success: true, message: "Created successfully", data: blogPost });
@@ -36,10 +43,18 @@ exports.getAllBlog = async (req, res) => {
 // Update a blog post by ID
 exports.updateBlog = async (req, res) => {
   try {
-    const blogPost = await BlogPost.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const sanitizedBody = Object.keys(req.body).reduce((acc, key) => {
+      acc[key] = sanitizeInput(req.body[key]);
+      return acc;
+    }, {});
+    const blogPost = await BlogPost.findByIdAndUpdate(
+      req.params.id,
+      sanitizedBody,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!blogPost) {
       return res
@@ -75,12 +90,12 @@ exports.deleteBlog = async (req, res) => {
 // Create addComment
 exports.addComment = async (req, res) => {
   try {
-    const { comment, name, courseId } = req.body.data;
-    const newComment = await Comment.create({
-      blogId: courseId,
-      comment,
-      name,
-    });
+    const sanitizedData = {
+      comment: sanitizeInput(req.body.data.comment),
+      name: sanitizeInput(req.body.data.name),
+      blogId: sanitizeInput(req.body.data.blogId), // Changed from courseId to blogId
+    };
+    const newComment = await Comment.create(sanitizedData);
     res.status(200).json({
       data: newComment,
       success: true,
@@ -117,7 +132,7 @@ exports.postReply = async (req, res) => {
     });
     res.status(201).json({ success: true, data: newReply });
   } catch (error) {
-    console.log(first)
+    console.log(first);
     res.status(500).json({ success: false, error: error.message });
   }
 };

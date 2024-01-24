@@ -1,11 +1,18 @@
 const Course = require("../models/Course");
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
-
+const xssFilters = require("xss-filters");
+function sanitizeInput(input) {
+  return typeof input === "string" ? xssFilters.inHTMLData(input) : input;
+}
 // Create a new course
 exports.createCourse = async (req, res) => {
   try {
-    const course = await Course.create(req.body);
+    const sanitizedBody = Object.keys(req.body).reduce((acc, key) => {
+      acc[key] = sanitizeInput(req.body[key]);
+      return acc;
+    }, {});
+    const course = await Course.create(sanitizedBody);
     res.status(201).json({
       success: true,
       message: "Created successfully",
@@ -88,12 +95,12 @@ exports.getCourseById = async (req, res) => {
 // Create addComment
 exports.addComment = async (req, res) => {
   try {
-    const { comment, name, courseId } = req.body.data;
-    const newComment = await Comment.create({
-      courseId,
-      comment,
-      name,
-    });
+    const sanitizedData = {
+      comment: sanitizeInput(req.body.data.comment),
+      name: sanitizeInput(req.body.data.name),
+      courseId: sanitizeInput(req.body.data.courseId),
+    };
+    const newComment = await Comment.create(sanitizedData);
     res.status(200).json({
       data: newComment,
       success: true,
