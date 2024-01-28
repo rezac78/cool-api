@@ -41,7 +41,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const email = xssFilters.inHTMLData(req.body.email);
   const password = xssFilters.inHTMLData(req.body.password);
-
   try {
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
