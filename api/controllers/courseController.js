@@ -2,6 +2,7 @@ const Course = require("../models/Course");
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
 const xssFilters = require("xss-filters");
+const User = require("../models/User");
 function sanitizeInput(input) {
   return typeof input === "string" ? xssFilters.inHTMLData(input) : input;
 }
@@ -86,10 +87,25 @@ exports.deleteChapter = async (req, res) => {
 // Get a course by ID
 exports.getCourseById = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
-    res.status(200).json({ success: true, data: course });
+    const courseId = req.params.id;
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+    console.log(req.user);
+    let isPurchased = false;
+    if (req.user) {
+      const user = await User.findById(req.user._id);
+      if (user && user.purchasedCourses.includes(courseId)) {
+        isPurchased = true;
+      }
+    }
+    res
+      .status(200)
+      .json({ success: true, data: { ...course._doc, isPurchased } });
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    console.error("Error fetching course:", error);
+    res.status(500).json({ message: "Error fetching course data" });
   }
 };
 // Create addComment
