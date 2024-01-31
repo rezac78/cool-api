@@ -101,7 +101,7 @@ exports.addComment = async (req, res) => {
     const sanitizedData = {
       comment: sanitizeInput(req.body.data.comment),
       name: sanitizeInput(req.body.data.name),
-      blogId: sanitizeInput(req.body.data.blogId), // Changed from courseId to blogId
+      blogId: sanitizeInput(req.body.data.courseId),
     };
     const newComment = await Comment.create(sanitizedData);
     res.status(200).json({
