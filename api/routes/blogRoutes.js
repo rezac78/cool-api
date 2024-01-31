@@ -10,7 +10,9 @@ const {
   addComment,
   getComments,
   postReply,
+  postLike,
 } = require("../controllers/blogController");
+const { optionalAuth } = require("../middlewares/optionalAuthMiddleware");
 
 // Example routes for Blog
 router.post("/", protect, authorize("admin"), createBlog);
@@ -21,4 +23,5 @@ router.delete("/:id", protect, authorize("admin"), deleteBlog);
 router.post("/comments", addComment);
 router.get("/comments/:blogId", getComments);
 router.post("/comments/reply", postReply);
+router.put("/like/:id", optionalAuth, postLike);
 module.exports = router;

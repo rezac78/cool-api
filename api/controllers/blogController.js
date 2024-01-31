@@ -34,7 +34,15 @@ exports.getBlogById = async (req, res) => {
 exports.getAllBlog = async (req, res) => {
   try {
     const blogPosts = await BlogPost.find();
-    res.status(200).json({ success: true, data: blogPosts });
+    const blogsWithCommentsCount = await Promise.all(
+      blogPosts.map(async (blog) => {
+        const commentsCount = await Comment.countDocuments({
+          blogId: blog._id,
+        });
+        return { ...blog._doc, commentsCount };
+      })
+    );
+    res.status(200).json({ success: true, data: blogsWithCommentsCount });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
@@ -134,5 +142,32 @@ exports.postReply = async (req, res) => {
   } catch (error) {
     console.log(first);
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+// Get postLike
+exports.postLike = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const userId = req.user._id;
+    const blogPost = await BlogPost.findById(blogId);
+    if (!blogPost) {
+      return res.status(404).json({ message: "Blog post not found" });
+    }
+    let message;
+    if (blogPost.likes.includes(userId)) {
+      blogPost.likes.pull(userId);
+      message = "Blog post unliked successfully";
+    } else {
+      blogPost.likes.push(userId);
+      message = "Blog post liked successfully";
+    }
+    await blogPost.save();
+    res.status(200).json({
+      message: message,
+      data: blogPost,
+    });
+  } catch (error) {
+    console.error("Error toggling like on the blog post:", error);
+    res.status(500).json({ message: "Error toggling like on the blog post" });
   }
 };

@@ -14,6 +14,7 @@ const adminRoutes = require("./api/routes/AdminRoute");
 const courseRoutes = require("./api/routes/courseRoutes");
 const blogRoutes = require("./api/routes/blogRoutes");
 const userRoutes = require("./api/routes/UserRoute");
+const searchRoutes = require("./api/routes/SearchRoute");
 
 // Rate limiting middleware
 const limiter = rateLimit({
@@ -68,6 +69,7 @@ app.use("/api/admin", adminRoutes); // Admin-related routes
 app.use("/api/courses", courseRoutes); // Course-related routes
 app.use("/api/blog", blogRoutes); // Blog-related routes
 app.use("/api/user", userRoutes); // User-related routes
+app.use("/api/search", searchRoutes); // Search-related routes
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=3600');
   next();

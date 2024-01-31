@@ -4,12 +4,20 @@ const mongoose = require("mongoose");
 exports.getUserDashboard = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate("purchasedCourses");
+    const purchasedCoursesWithCount = await Promise.all(
+      user.purchasedCourses.map(async (course) => {
+        const purchaseCount = await User.countDocuments({
+          purchasedCourses: course._id,
+        });
+        return { ...course._doc, purchaseCount };
+      })
+    );
     res.status(201).json({
       success: true,
       message: "Created successfully",
       data: {
         ...user._doc,
-        purchasedCourses: user.purchasedCourses,
+        purchasedCourses: purchasedCoursesWithCount,
       },
     });
   } catch (error) {
