@@ -18,10 +18,6 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  peopleNumber: {
-    type: String,
-    required: true,
-  },
   prerequisites: {
     type: String,
     required: true,
