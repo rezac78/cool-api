@@ -1,11 +1,8 @@
 const Course = require("../models/Course");
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
-const xssFilters = require("xss-filters");
 const User = require("../models/User");
-function sanitizeInput(input) {
-  return typeof input === "string" ? xssFilters.inHTMLData(input) : input;
-}
+const sanitizeInput = require("../../utils/sanitizeInput");
 // Create a new course
 exports.createCourse = async (req, res) => {
   try {

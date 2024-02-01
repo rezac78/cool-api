@@ -1,10 +1,7 @@
 const BlogPost = require("../models/BlogPost");
 const Comment = require("../models/CommentBlog");
 const mongoose = require("mongoose");
-const xssFilters = require("xss-filters");
-function sanitizeInput(input) {
-  return typeof input === "string" ? xssFilters.inHTMLData(input) : input;
-}
+const sanitizeInput = require("../../utils/sanitizeInput");
 // Create a new blog post
 exports.createBlog = async (req, res) => {
   try {

@@ -1,12 +1,6 @@
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const xssFilters = require("xss-filters");
-
-const generateToken = (user) => {
-  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
-  });
-};
+const generateToken = require("../../utils/tokenGenerator");
 
 exports.register = async (req, res) => {
   try {

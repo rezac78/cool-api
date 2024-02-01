@@ -2,11 +2,12 @@ const express = require("express");
 const dotEnv = require("dotenv");
 const cors = require("cors");
 const morgan = require("morgan");
-const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("express-mongo-sanitize");
-const helmet = require("helmet");
 const redis = require("redis");
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
+const limiter = require("./api/middlewares/rateLimit");
+const sanitize = require("./api/middlewares/sanitize");
+const securityHeaders = require("./api/middlewares/securityHeaders");
+const errorHandler = require("./api/middlewares/errorHandler");
 // import File
 const connectDB = require("./config/db");
 const authRoutes = require("./api/routes/authRoutes");
@@ -15,19 +16,11 @@ const courseRoutes = require("./api/routes/courseRoutes");
 const blogRoutes = require("./api/routes/blogRoutes");
 const userRoutes = require("./api/routes/UserRoute");
 const searchRoutes = require("./api/routes/SearchRoute");
-
-// Rate limiting middleware
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-});
-
 // Create a Redis client
 const redisClient = redis.createClient({
   host: process.env.REDIS_HOST || "cool-api-75mo.onrender.com", // Replace with your Redis server host
   port: process.env.REDIS_PORT || 6379, // Replace with your Redis server port
 });
-
 // Load Config
 dotEnv.config({ path: "./config/config.env" });
 
@@ -41,28 +34,33 @@ const app = express();
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-
 // Middleware setup
-const allowedOrigins = ['https://coollearning.netlify.app', 'http://localhost:3000'];
+const allowedOrigins = [
+  "https://coollearning.netlify.app",
+  "http://localhost:3000",
+];
 app.use(express.json());
-app.use(cors((req, callback) => {
-  const origin = allowedOrigins.includes(req.header('Origin')) ? req.header('Origin') : false;
-  callback(null, { origin, credentials: true });
-}));
-
+app.use(
+  cors((req, callback) => {
+    const origin = allowedOrigins.includes(req.header("Origin"))
+      ? req.header("Origin")
+      : false;
+    callback(null, { origin, credentials: true });
+  })
+);
+// Rate limiting middleware
+app.use(limiter);
 // Define a root route
 app.get("/", (req, res) => {
   res.send("Hello World from Express.js");
 });
 app.use(cookieParser());
+app.use(errorHandler);
 app.use(limiter);
-
 // Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
-
+app.use(sanitize);
 // Set various HTTP headers for security
-app.use(helmet());
-
+app.use(securityHeaders);
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes); // Admin-related routes
@@ -70,10 +68,6 @@ app.use("/api/courses", courseRoutes); // Course-related routes
 app.use("/api/blog", blogRoutes); // Blog-related routes
 app.use("/api/user", userRoutes); // User-related routes
 app.use("/api/search", searchRoutes); // Search-related routes
-app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'public, max-age=3600');
-  next();
-});
 // Select a port
 const PORT = process.env.PORT || 3000;
 
