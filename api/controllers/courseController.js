@@ -119,11 +119,13 @@ exports.getCourseById = async (req, res) => {
 };
 // Create addComment
 exports.addComment = async (req, res) => {
+  const { courseId } = req.params;
   try {
     const sanitizedData = {
       comment: sanitizeInput(req.body.data.comment),
       name: sanitizeInput(req.body.data.name),
-      courseId: sanitizeInput(req.body.data.courseId),
+      parentId: sanitizeInput(req.body.data.parentId),
+      courseId: sanitizeInput(courseId),
     };
     const newComment = await Comment.create(sanitizedData);
     res.status(200).json({

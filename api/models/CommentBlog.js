@@ -23,10 +23,8 @@ const CommentBlogSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  parentComment: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CommentBlog",
-    default: null,
+  parentId: {
+    type: String,
   },
 });
 

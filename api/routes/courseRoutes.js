@@ -26,7 +26,7 @@ router.delete(
   authorize("admin"),
   deleteChapter
 );
-router.post("/comments", addComment);
+router.post("/comments/:courseId", addComment);
 router.get("/comments/:courseId", getComments);
 router.post("/comments/reply", postReply);
 module.exports = router;

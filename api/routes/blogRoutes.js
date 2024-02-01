@@ -20,7 +20,7 @@ router.get("/", getAllBlog);
 router.get("/:id", getBlogById);
 router.put("/:id", protect, authorize("admin"), updateBlog);
 router.delete("/:id", protect, authorize("admin"), deleteBlog);
-router.post("/comments", addComment);
+router.post("/comments/:blogId", addComment);
 router.get("/comments/:blogId", getComments);
 router.post("/comments/reply", postReply);
 router.put("/like/:id", optionalAuth, postLike);
