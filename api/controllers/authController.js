@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const xssFilters = require("xss-filters");
 const generateToken = require("../../utils/tokenGenerator");
-
+const jwt = require("jsonwebtoken");
 exports.register = async (req, res) => {
   try {
     const email = xssFilters.inHTMLData(req.body.email);
@@ -66,4 +66,18 @@ exports.logout = async (req, res) => {
     expires: new Date(0),
   });
   res.json({ success: true, message: "Logged out successfully" });
+};
+
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) return res.status(401).json({ success: false, message: 'Refresh Token is required' });
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    const { accessToken, refreshToken: newRefreshToken } = generateToken(user);
+    res.json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    res.status(403).json({ success: false, message: 'Invalid or Expired Refresh Token' });
+  }
 };

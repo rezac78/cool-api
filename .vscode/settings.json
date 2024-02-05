@@ -1,5 +1,10 @@
 {
   "cSpell.words": [
     "EXPIREـRefresh"
-  ]
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#02323E",
+    "titleBar.activeBackground": "#024657",
+    "titleBar.activeForeground": "#F2FCFF"
+  }
 }
